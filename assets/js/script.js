@@ -61,6 +61,18 @@ class Filter {
 
         this.listPeople(filteredPeople);
     }
+
+    static verifyAge(date) {
+        const birthDate = new Date(date);
+        const curDate = new Date();
+        let age = curDate.getFullYear() - birthDate.getFullYear();
+
+        if(curDate.getMonth() < birthDate.getMonth()
+        || (curDate.getMonth() === birthDate.getMonth() 
+        && curDate.getDate() < birthDate.getDate())) age--;
+
+        return age <= 18;
+    }
 }
 
 const registeredButton = document.getElementById('register-button');
@@ -70,24 +82,24 @@ registeredButton.addEventListener('click', (event) => {
 
     const formInputs = document.querySelectorAll('.field');
     const registerInfo = [];
-    let addPerson = true
+    let missInfo = false
 
     formInputs.forEach((input) => {
-        if(input.value === '') addPerson = false;
+        if(input.value === '') missInfo = true;
         registerInfo.push(input.value)
     })
 
-    if(addPerson) {
-        if(Filter.registeredPeople.some(({ email }) => email === registerInfo[3])) alert('Email já cadastrado');
-        else {
-            const totalPeople = document.getElementById('total-alunos');
+    if(missInfo) alert('Adicione todas as informações');
+    else if(Filter.verifyAge(registerInfo[2])) alert('Idade inválida');
+    else if(Filter.registeredPeople.some(({ email }) => email === registerInfo[3])) alert('Email já cadastrado');
+    else {
+        const totalPeople = document.getElementById('total-alunos');
 
-            Filter.registeredPeople.push(new Person(...registerInfo));
-            totalPeople.innerText = Filter.registeredPeople.length;
-        }
-    
+        Filter.registeredPeople.push(new Person(...registerInfo));
+        totalPeople.innerText = Filter.registeredPeople.length;
+        
         Filter.filterByOffice();
-    } else alert('Adicione todas as informações')
+    }
 })
 
 const searchButton = document.getElementById('btn');
